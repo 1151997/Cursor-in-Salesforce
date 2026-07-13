@@ -45,7 +45,8 @@ public with sharing class AccountCursor {
             - deleted record will be skipped by the pagination cursor and next set of records will be fetched.
             - no dataset will be fetched if it is apex cusor.
         - Cursor can move forward and backward.
-
+        - Cursor is stateless.
+        - Maximum chunk size for Cursor is 2000. 
 
         */
 
