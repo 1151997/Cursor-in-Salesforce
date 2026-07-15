@@ -1,5 +1,5 @@
 public with sharing class AccountPaginationController {
-    private static final String CACHE_KEY = 'cache.PaginationCache.accountCursor';
+       // private static final String CACHE_KEY = 'cache.PaginationCache.accountCursor';
     public class PaginationWrapper{
             @AuraEnabled
             public List<Account> records;
@@ -14,12 +14,14 @@ public with sharing class AccountPaginationController {
 
         PaginationWrapper wrapper = new PaginationWrapper();
         Database.Cursor accountCursor ;
-        if (Cache.Session.contains(CACHE_KEY)) { 
-            accountCursor = (Database.Cursor) Cache.Session.get(CACHE_KEY); 
+        Cache.SessionPartition sessionPart = Cache.Session.getPartition('local.PaginationCache');
+
+        if (sessionPart.contains('accountCursor')) { 
+            accountCursor = (Database.Cursor) sessionPart.get('accountCursor'); 
         } else {
            
             accountCursor = Database.getCursor('SELECT Id, Name, Industry, AnnualRevenue FROM Account ORDER BY Name ASC'); 
-            Cache.Session.put(CACHE_KEY, accountCursor, 300); 
+            sessionPart.put('accountCursor', accountCursor);
         }
 
         Integer remainingRecords = accountCursor.getNumRecords() - position;
